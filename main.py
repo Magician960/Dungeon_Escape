@@ -95,9 +95,22 @@ class Player(pygame.sprite.Sprite):
 
         self.image = sprite_list[int(self.current_sprite)]
 
+class Door(pygame.sprite.Sprite):
+    """A class that the player sprite can collide with to pass the game"""
+    def __init__(self, x, y):
+        super().__init__()
+        #Load image
+        self.image = pygame.image.load("assets/castledoors.png")
+        self.rect = self.image.get_rect()
+        self.rect.topright = (x, y)
 
 #Create sprite groups
 my_player_group = pygame.sprite.Group()
+my_door_group = pygame.sprite.Group()
+
+#Add door to sprite group
+my_door = Door(WINDOW_WIDTH - 50, 50)
+my_door_group.add(my_door)
 
 #Add player to sprite group
 my_player = Player(0,WINDOW_HEIGHT)
@@ -115,6 +128,9 @@ while running:
     display_surface.fill((0,0,0))
 
     #Update and draw sprite groups
+    my_door_group.update()
+    my_door_group.draw(display_surface)
+
     my_player_group.update()
     my_player_group.draw(display_surface)
     
