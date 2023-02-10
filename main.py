@@ -28,7 +28,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
 
         #Set constant varialbes
-        self.STARTING_SPEED = 1
+        self.STARTING_SPEED = 4
 
         #Set starting variables
         self.speed = self.STARTING_SPEED
@@ -39,9 +39,24 @@ class Player(pygame.sprite.Sprite):
 
         #Get player sprites
         self.player_down_sprites = []
-        for i in range(2):
-            image = player_ss.image_at((0 + i*48, 0 + i*64, 48, 64))
+        for i in range(0,3):
+            image = player_ss.image_at((0 + i*48, 0, 48, 64))
             self.player_down_sprites.append(image)
+        
+        self.player_left_sprites = []
+        for i in range(0,3):
+            image = player_ss.image_at((0 + i*48, 64, 48, 64))
+            self.player_left_sprites.append(image)
+
+        self.player_right_sprites = []
+        for i in range(0,3):
+            image = player_ss.image_at((0 + i*48, 128, 48, 64))
+            self.player_right_sprites.append(image)
+        
+        self.player_up_sprites = []
+        for i in range(0,3):
+            image = player_ss.image_at((0 + i*48, 192, 48, 64))
+            self.player_up_sprites.append(image)
 
         #Load image and get rect
         self.current_sprite = 0
@@ -56,16 +71,30 @@ class Player(pygame.sprite.Sprite):
 
     def move(self):
         """A method to move the player"""
-        #If a player holds down a directional key, move them in that direction
+        #If a player holds down a directional key AND is in-bounds, move them in that direction
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT] and self.rect.left > 0:
             self.rect.x -= self.speed
-        if keys[pygame.K_RIGHT]:
+            self.animate(self.player_left_sprites, .1)
+        if keys[pygame.K_RIGHT] and self.rect.right < WINDOW_WIDTH:
             self.rect.x += self.speed
-        if keys[pygame.K_UP]:
+            self.animate(self.player_right_sprites, .1)
+        if keys[pygame.K_UP] and self.rect.top > 0:
             self.rect.y -= self.speed
-        if keys[pygame.K_DOWN]:
+            self.animate(self.player_up_sprites, .1)
+        if keys[pygame.K_DOWN] and self.rect.bottom < WINDOW_HEIGHT:
             self.rect.y += self.speed
+            self.animate(self.player_down_sprites, .1)
+    
+    def animate(self, sprite_list, speed):
+        """A method to animate the character moving"""
+        if self.current_sprite <= len(sprite_list) - 0.1:
+            self.current_sprite += speed
+        else:
+            self.current_sprite = 0
+
+        self.image = sprite_list[int(self.current_sprite)]
+
 
 #Create sprite groups
 my_player_group = pygame.sprite.Group()
@@ -82,10 +111,12 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+    #Fill screen with black (REPLACE THIS WITH BACKGROUND IMAGE SOON)
+    display_surface.fill((0,0,0))
+
     #Update and draw sprite groups
     my_player_group.update()
     my_player_group.draw(display_surface)
-    
     
     #Update the display and tick the clock
     pygame.display.update()
