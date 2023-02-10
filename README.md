@@ -8,3 +8,9 @@ A repository to hold the source code for the UNSW 23T1 Game Jam.
 Created by Svetlana Kushnariova (Cabbit) <lana-chan@yandex.ru> & Jordan Irwin (AntumDeluge)
 
 Link: https://opengameart.org/content/captive-tomi
+
+### Door sprite:
+
+Castle door by Tuomo Untinen
+
+Link: https://opengameart.org/content/castle-door
