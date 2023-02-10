@@ -64,6 +64,44 @@ class Game():
         #Blit the HUD
         display_surface.blit(round_text, round_rect)
         display_surface.blit(time_text, time_rect)
+    
+    def pause_game(self, main_text, sub_text):
+        """Pause the game until user presses enter"""
+        global running
+
+        #Set colors
+        WHITE = (255,255,255)
+        BLACK = (0,0,0)
+
+        #Create main pause text
+        main_text = self.title_font.render(main_text, True, WHITE)
+        main_rect = main_text.get_rect()
+        main_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+
+        #Create sub pause text
+        sub_text = self.HUD_font.render(sub_text, True, WHITE)
+        sub_rect = sub_text.get_rect()
+        sub_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 64)
+
+        #Display pause screen
+        display_surface.fill(BLACK)
+        display_surface.blit(main_text, main_rect)
+        display_surface.blit(sub_text, sub_rect)
+
+        pygame.display.update()
+
+        #Pause the game until user hits enter or quits
+        is_paused = True
+        while is_paused:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    #User wants to continue
+                    if event.key == pygame.K_RETURN:
+                        is_paused = False
+                #User wants to quit
+                if event.type == pygame.QUIT:
+                    is_paused = False
+                    running = False
 
 class Player(pygame.sprite.Sprite):
     """A class the user can control"""
@@ -162,6 +200,7 @@ my_player_group.add(my_player)
 
 #Start the game
 my_game = Game(my_player, my_door)
+my_game.pause_game("Dungeon Escape", "Press 'Enter' to begin...")
 
 #Main game loop
 running = True
