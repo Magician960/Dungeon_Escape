@@ -21,6 +21,50 @@ FPS = 60
 clock = pygame.time.Clock()
 
 #Define classes
+class Game():
+    """A class to help manage gameplay and sprite interactions"""
+    def __init__(self, player, door):
+        #Set constant variables
+        self.STARTING_ROUND_TIME = 30
+
+        #Set game values
+        self.round_number = 1
+        self.frame_count = 0
+        self.round_time = self.STARTING_ROUND_TIME
+
+        #Set fonts
+        self.title_font = pygame.font.Font("assets/aAbsoluteEmpire.ttf", 96)
+        self.HUD_font = pygame.font.Font("assets/aAbsoluteEmpire.ttf", 48)
+
+        #Attach sprites and groups
+        self.player = player
+        self.door = door
+    
+    def update(self):
+        """Update the game"""
+        self.frame_count+= 1
+        if self.frame_count % FPS == 0:
+            self.round_time -= 1
+            self.frame_count = 0
+    
+    def draw(self):
+        """Draw the GAME HUD"""
+        #Set colors
+        WHITE = (255,255,255)
+
+        #Set text
+        round_text = self.HUD_font.render(f"Round: {self.round_number}", True, WHITE)
+        round_rect = round_text.get_rect()
+        round_rect.topleft = (10, 10)
+
+        time_text = self.HUD_font.render(f"Time Left: {self.round_time}", True, WHITE)
+        time_rect = time_text.get_rect()
+        time_rect.topright = (WINDOW_WIDTH - 10, WINDOW_HEIGHT - 50)
+
+        #Blit the HUD
+        display_surface.blit(round_text, round_rect)
+        display_surface.blit(time_text, time_rect)
+
 class Player(pygame.sprite.Sprite):
     """A class the user can control"""
     def __init__(self, x, y):
@@ -116,6 +160,9 @@ my_door_group.add(my_door)
 my_player = Player(0,WINDOW_HEIGHT)
 my_player_group.add(my_player)
 
+#Start the game
+my_game = Game(my_player, my_door)
+
 #Main game loop
 running = True
 while running:
@@ -133,6 +180,10 @@ while running:
 
     my_player_group.update()
     my_player_group.draw(display_surface)
+
+    #Update and draw the game
+    my_game.update()
+    my_game.draw()
     
     #Update the display and tick the clock
     pygame.display.update()

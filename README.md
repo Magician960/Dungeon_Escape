@@ -14,3 +14,9 @@ Link: https://opengameart.org/content/captive-tomi
 Castle door by Tuomo Untinen
 
 Link: https://opengameart.org/content/castle-door
+
+###Font
+
+Absolute Empire by wep
+
+Link: https://www.dafont.com/a-absolute-empire.font
