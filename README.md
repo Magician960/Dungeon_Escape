@@ -15,8 +15,15 @@ Castle door by Tuomo Untinen
 
 Link: https://opengameart.org/content/castle-door
 
+#Rat sprites:
+
+Created by Tuomo Untinen (Reemax) & Jordan Irwin (AntumDeluge)
+
+Link: https://opengameart.org/content/rodents-rat-rework
+
 ### Font
 
 Absolute Empire by wep
 
 Link: https://www.dafont.com/a-absolute-empire.font
+
