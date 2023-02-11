@@ -1,5 +1,6 @@
 import pygame
 import os
+import random
 from spritesheet import SpriteSheet
 
 #Set working directory
@@ -23,7 +24,7 @@ clock = pygame.time.Clock()
 #Define classes
 class Game():
     """A class to help manage gameplay and sprite interactions"""
-    def __init__(self, player, door):
+    def __init__(self, player, door_group, rat_group):
         #Set constant variables
         self.STARTING_ROUND_TIME = 30
 
@@ -38,7 +39,8 @@ class Game():
 
         #Attach sprites and groups
         self.player = player
-        self.door = door
+        self.door_group = door_group
+        self.rat_group = rat_group
     
     def update(self):
         """Update the game"""
@@ -46,7 +48,18 @@ class Game():
         if self.frame_count % FPS == 0:
             self.round_time -= 1
             self.frame_count = 0
-    
+        
+        self.check_collisions()
+
+    def check_collisions(self):
+        """A method to check collisions between sprites"""
+        #Check to see if the player sprite collided with the door
+        if pygame.sprite.spritecollide(self.player, self.door_group, False):
+            self.player.reset()
+            self.round_time = 30
+            self.round_number += 1
+            self.pause_game("You have escaped!", "Press 'Enter' to continue...")
+
     def draw(self):
         """Draw the GAME HUD"""
         #Set colors
@@ -109,8 +122,10 @@ class Player(pygame.sprite.Sprite):
         """Initialise the player"""
         super().__init__()
 
-        #Set constant varialbes
+        #Set constant variables
         self.STARTING_SPEED = 4
+        self.STARTING_X = x
+        self.STARTING_Y = y
 
         #Set starting variables
         self.speed = self.STARTING_SPEED
@@ -176,6 +191,52 @@ class Player(pygame.sprite.Sprite):
             self.current_sprite = 0
 
         self.image = sprite_list[int(self.current_sprite)]
+    
+    def reset(self):
+        """A method to return the player sprite to the starting location"""
+        self.rect.bottomleft = (self.STARTING_X, self.STARTING_Y)
+
+class Rat(pygame.sprite.Sprite):
+    """A class of enemy rats the player should avoid"""
+    def __init__(self, speed):
+        super().__init__()
+
+        #Set starting variables
+        self.speed = speed
+
+        #Get animation frames
+        if random.randint(0,1) == 1:
+            filename = "assets/rat_spritesheet.png"
+        else:
+            filename = "assets/mouse_spritesheet.png"
+        rat_ss = SpriteSheet(filename)
+
+        #Get rat sprites
+        self.rat_up_sprites = []
+        for i in range(0,3):
+            image = rat_ss.image_at((0 + i*32, 0, 32, 32))
+            self.rat_up_sprites.append(image)
+
+        self.rat_right_sprites = []
+        for i in range(0,3):
+            image = rat_ss.image_at((0 + i*32, 32, 32, 32))
+            self.rat_right_sprites.append(image)
+
+        self.rat_down_sprites = []
+        for i in range(0,3):
+            image = rat_ss.image_at((0 + i*32, 64, 32, 32))
+            self.rat_down_sprites.append(image)
+
+        self.rat_left_sprites = []
+        for i in range(0,3):
+            image = rat_ss.image_at((0 + i*32, 96, 32, 32))
+            self.rat_left_sprites.append(image)
+
+        #Load image and get rect
+        self.current_sprite = 0
+        self.image = self.rat_down_sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
 
 class Door(pygame.sprite.Sprite):
     """A class that the player sprite can collide with to pass the game"""
@@ -189,6 +250,7 @@ class Door(pygame.sprite.Sprite):
 #Create sprite groups
 my_player_group = pygame.sprite.Group()
 my_door_group = pygame.sprite.Group()
+my_rat_group = pygame.sprite.Group()
 
 #Add door to sprite group
 my_door = Door(WINDOW_WIDTH - 50, 50)
@@ -198,8 +260,12 @@ my_door_group.add(my_door)
 my_player = Player(0,WINDOW_HEIGHT)
 my_player_group.add(my_player)
 
+#TEST - add rat
+my_rat = Rat(1)
+my_rat_group.add(my_rat)
+
 #Start the game
-my_game = Game(my_player, my_door)
+my_game = Game(my_player, my_door_group, my_rat_group)
 my_game.pause_game("Dungeon Escape", "Press 'Enter' to begin...")
 
 #Main game loop
@@ -219,6 +285,9 @@ while running:
 
     my_player_group.update()
     my_player_group.draw(display_surface)
+
+    my_rat_group.update()
+    my_rat_group.draw(display_surface)
 
     #Update and draw the game
     my_game.update()
