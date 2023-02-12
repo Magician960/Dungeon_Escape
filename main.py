@@ -60,6 +60,11 @@ class Game():
             self.round_number += 1
             self.pause_game("You have escaped!", "Press 'Enter' to continue...")
 
+        #Check to see if the player sprite collided with a rat
+        if pygame.sprite.spritecollide(self.player, self.rat_group, False):
+            self.player.reset()
+            self.pause_game("You have died", "Press 'Enter' to try again...")
+
     def draw(self):
         """Draw the GAME HUD"""
         #Set colors
@@ -203,6 +208,13 @@ class Rat(pygame.sprite.Sprite):
 
         #Set starting variables
         self.speed = speed
+        #Set initial direction
+        self.direction_x = 0
+        self.direction_y = 0
+
+        while self.direction_x == 0 and self.direction_y == 0:
+            self.direction_x = random.choice([-1,0,1])
+            self.direction_y = random.choice([-1,0,1])
 
         #Get animation frames
         if random.randint(0,1) == 1:
@@ -237,6 +249,41 @@ class Rat(pygame.sprite.Sprite):
         self.image = self.rat_down_sprites[self.current_sprite]
         self.rect = self.image.get_rect()
         self.rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+    
+    def update(self):
+        """A method to update the rat sprite"""
+        self.move()
+    
+    def move(self):
+        """A method to move the rat sprite"""
+        self.rect.x += self.direction_x * self.speed
+        self.rect.y += self.direction_y * self.speed
+
+        #Check if the sprite has collided with the boundaries
+        if self.rect.bottom == WINDOW_HEIGHT or self.rect.top == 0:
+            self.direction_y *= -1
+        if self.rect.left == 0 or self.rect.right == WINDOW_WIDTH:
+            self.direction_x *= -1
+        
+        #Animate the rat moving
+        if self.direction_x > 0:
+            self.animate(self.rat_right_sprites, 0.1)
+        else:
+            self.animate(self.rat_left_sprites, 0.1)
+        
+        if self.direction_y > 0:
+            self.animate(self.rat_down_sprites, 0.1)
+        else:
+            self.animate(self.rat_up_sprites, 0.1)
+    
+    def animate(self, sprite_list, speed):
+        """A method to animate the rat moving"""
+        if self.current_sprite <= len(sprite_list) - 0.1:
+            self.current_sprite += speed
+        else:
+            self.current_sprite = 0
+
+        self.image = sprite_list[int(self.current_sprite)]
 
 class Door(pygame.sprite.Sprite):
     """A class that the player sprite can collide with to pass the game"""
