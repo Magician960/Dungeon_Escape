@@ -27,3 +27,8 @@ Absolute Empire by wep
 
 Link: https://www.dafont.com/a-absolute-empire.font
 
+### Music
+
+Child's Nightmare by Patrick de Arteaga ~patrickdearteaga.com
+
+Link:https://patrickdearteaga.com/royalty-free-music/childs-nightmare/
