@@ -1,11 +1,11 @@
 import pygame
-import os
+#import os
 import random
 from spritesheet import SpriteSheet
 
 #Set working directory
-path = "/home/tonynguyen/Personal_Projects/Game_Jam_Projects/Dungeon_Escape/"
-os.chdir(path)
+#path = "/home/tonynguyen/Personal_Projects/Game_Jam_Projects/Dungeon_Escape/"
+#os.chdir(path)
 
 #Initialise pygame
 pygame.init()
