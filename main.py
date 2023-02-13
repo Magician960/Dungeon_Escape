@@ -27,9 +27,10 @@ class Game():
     def __init__(self, player, door_group, rat_group):
         #Set constant variables
         self.STARTING_ROUND_TIME = 30
+        self.STARTING_ROUND_NUMBER = 1
 
         #Set game values
-        self.round_number = 1
+        self.round_number = self.STARTING_ROUND_NUMBER
         self.frame_count = 0
         self.round_time = self.STARTING_ROUND_TIME
 
@@ -55,15 +56,44 @@ class Game():
         """A method to check collisions between sprites"""
         #Check to see if the player sprite collided with the door
         if pygame.sprite.spritecollide(self.player, self.door_group, False):
-            self.player.reset()
-            self.round_time = 30
-            self.round_number += 1
-            self.pause_game("You have escaped!", "Press 'Enter' to continue...")
+            self.start_new_round()
 
         #Check to see if the player sprite collided with a rat
         if pygame.sprite.spritecollide(self.player, self.rat_group, False):
-            self.player.reset()
-            self.pause_game("You have died", "Press 'Enter' to try again...")
+            self.reset_game()
+
+    def reset_game(self):
+        """A method to reset the game upon a loss"""
+        self.round_number = self.STARTING_ROUND_NUMBER
+        self.round_time = self.STARTING_ROUND_TIME
+        self.player.reset()
+
+        #Depopulate sprite group
+        self.rat_group.empty()
+
+        #Repopulate rat group
+        for i in range(self.round_number):
+            rat = Rat(1)
+            self.rat_group.add(rat)
+
+        self.pause_game("You have died", "Press 'Enter' to try again...")
+
+    def start_new_round(self):
+        """A method to start a new round"""
+        #Reset round values
+        self.player.reset()
+        self.round_time = 30
+        self.round_number += 1   
+        self.pause_game("You have escaped!", "Press 'Enter' to continue...")
+
+        #Depopulate sprite group
+        self.rat_group.empty()
+
+        #Spawn new rat sprites
+        for i in range(self.round_number * 3):
+            rat = Rat(1)
+            self.rat_group.add(rat)
+
 
     def draw(self):
         """Draw the GAME HUD"""
@@ -248,22 +278,23 @@ class Rat(pygame.sprite.Sprite):
         self.current_sprite = 0
         self.image = self.rat_down_sprites[self.current_sprite]
         self.rect = self.image.get_rect()
-        self.rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
-    
+        self.rect.center = (random.randint(WINDOW_WIDTH//2 - 100, WINDOW_WIDTH//2 + 100), random.randint(WINDOW_HEIGHT//2 - 100, WINDOW_HEIGHT//2 + 100))
     def update(self):
         """A method to update the rat sprite"""
         self.move()
     
     def move(self):
         """A method to move the rat sprite"""
-        self.rect.x += self.direction_x * self.speed
-        self.rect.y += self.direction_y * self.speed
+        self.rect.x += random.uniform(self.direction_x /2,self.direction_x * 2) * random.uniform(self.speed, self.speed*2)
+        self.rect.y += random.uniform(self.direction_y /2,self.direction_y * 2) * random.uniform(self.speed, self.speed*2)
 
         #Check if the sprite has collided with the boundaries
-        if self.rect.bottom == WINDOW_HEIGHT or self.rect.top == 0:
+        if self.rect.bottom >= WINDOW_HEIGHT or self.rect.top <= 0:
             self.direction_y *= -1
-        if self.rect.left == 0 or self.rect.right == WINDOW_WIDTH:
+            self.rect.y += 20*self.direction_y
+        if self.rect.left <= 0 or self.rect.right >= WINDOW_WIDTH:
             self.direction_x *= -1
+            self.rect.x += 20 * self.direction_x
         
         #Animate the rat moving
         if self.direction_x > 0:
