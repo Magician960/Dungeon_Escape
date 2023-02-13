@@ -42,6 +42,11 @@ class Game():
         self.player = player
         self.door_group = door_group
         self.rat_group = rat_group
+
+        #Set sounds
+        pygame.mixer.music.load("assets/childs_nightmare.ogg")
+        self.round_win_sound = pygame.mixer.Sound("assets/round_win_sound.wav")
+        self.game_over_sound = pygame.mixer.Sound("assets/game_over_sound.wav")
     
     def update(self):
         """Update the game"""
@@ -51,15 +56,24 @@ class Game():
             self.frame_count = 0
         
         self.check_collisions()
+        self.check_timer()
 
     def check_collisions(self):
         """A method to check collisions between sprites"""
         #Check to see if the player sprite collided with the door
         if pygame.sprite.spritecollide(self.player, self.door_group, False):
+            self.round_win_sound.play()
             self.start_new_round()
 
         #Check to see if the player sprite collided with a rat
         if pygame.sprite.spritecollide(self.player, self.rat_group, False, pygame.sprite.collide_mask):
+            self.game_over_sound.play()
+            self.reset_game()
+
+    def check_timer(self):
+        """A method to check game over with the timer"""
+        if self.round_time == 0:
+            self.game_over_sound.play()
             self.reset_game()
 
     def reset_game(self):
@@ -76,7 +90,12 @@ class Game():
             rat = Rat(1)
             self.rat_group.add(rat)
 
-        self.pause_game("You have died", "Press 'Enter' to try again...")
+        if self.round_time == 0:
+            self.pause_game("You ran out of time", "Press 'Enter' to try again")
+        else:
+            self.pause_game("You have died", "Press 'Enter' to try again...")
+        
+        pygame.mixer.music.play(-1, 0.0)
 
     def start_new_round(self):
         """A method to start a new round"""
@@ -139,6 +158,7 @@ class Game():
         pygame.display.update()
 
         #Pause the game until user hits enter or quits
+        pygame.mixer.music.pause()
         is_paused = True
         while is_paused:
             for event in pygame.event.get():
@@ -146,10 +166,12 @@ class Game():
                     #User wants to continue
                     if event.key == pygame.K_RETURN:
                         is_paused = False
+                        pygame.mixer.music.unpause()
                 #User wants to quit
                 if event.type == pygame.QUIT:
                     is_paused = False
                     running = False
+                    pygame.mixer.music.stop()
 
 class Player(pygame.sprite.Sprite):
     """A class the user can control"""
@@ -356,6 +378,7 @@ my_rat_group.add(my_rat)
 #Start the game
 my_game = Game(my_player, my_door_group, my_rat_group)
 my_game.pause_game("Dungeon Escape", "Press 'Enter' to begin...")
+pygame.mixer.music.play(-1, 0.0)
 
 #Main game loop
 running = True
