@@ -33,9 +33,12 @@ Child's Nightmare by Patrick de Arteaga ~patrickdearteaga.com
 
 Link:https://patrickdearteaga.com/royalty-free-music/childs-nightmare/
 
-### Round victory sound
+### Round Victory sound
 
 Sound Effect from <a href="https://pixabay.com/sound-effects/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=5930">Pixabay</a>
 
-### Game over sound
+### Game Over sound
 Sound Effect by <a href="https://pixabay.com/users/lightyeartraxx-26697863/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=132096">Lightyeartraxx</a> from <a href="https://pixabay.com//?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=132096">Pixabay</a>
+
+###Exe Icon Image
+Made by me!
