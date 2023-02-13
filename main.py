@@ -59,7 +59,7 @@ class Game():
             self.start_new_round()
 
         #Check to see if the player sprite collided with a rat
-        if pygame.sprite.spritecollide(self.player, self.rat_group, False):
+        if pygame.sprite.spritecollide(self.player, self.rat_group, False, pygame.sprite.collide_mask):
             self.reset_game()
 
     def reset_game(self):
@@ -90,7 +90,7 @@ class Game():
         self.rat_group.empty()
 
         #Spawn new rat sprites
-        for i in range(self.round_number * 3):
+        for i in range(self.round_number ** 2):
             rat = Rat(1)
             self.rat_group.add(rat)
 
@@ -201,6 +201,9 @@ class Player(pygame.sprite.Sprite):
         """A method to update the player sprite"""
         self.move()
 
+        #Update the player's mask
+        self.mask = pygame.mask.from_surface(self.image)
+
     def move(self):
         """A method to move the player"""
         #If a player holds down a directional key AND is in-bounds, move them in that direction
@@ -282,11 +285,14 @@ class Rat(pygame.sprite.Sprite):
     def update(self):
         """A method to update the rat sprite"""
         self.move()
+
+        #Update the rat mask
+        self.mask = pygame.mask.from_surface(self.image)
     
     def move(self):
         """A method to move the rat sprite"""
-        self.rect.x += random.uniform(self.direction_x /2,self.direction_x * 2) * random.uniform(self.speed, self.speed*2)
-        self.rect.y += random.uniform(self.direction_y /2,self.direction_y * 2) * random.uniform(self.speed, self.speed*2)
+        self.rect.x += random.uniform(self.direction_x /2,self.direction_x * 2) * random.uniform(self.speed, self.speed*3)
+        self.rect.y += random.uniform(self.direction_y /2,self.direction_y * 2) * random.uniform(self.speed, self.speed*3)
 
         #Check if the sprite has collided with the boundaries
         if self.rect.bottom >= WINDOW_HEIGHT or self.rect.top <= 0:
@@ -306,6 +312,11 @@ class Rat(pygame.sprite.Sprite):
             self.animate(self.rat_down_sprites, 0.1)
         else:
             self.animate(self.rat_up_sprites, 0.1)
+        
+        if self.direction_x > self.direction_y:
+            self.animate(self.rat_right_sprites, 0.1)
+        elif self.direction_x < self.direction_y:
+            self.animate(self.rat_left_sprites, 0.1)
     
     def animate(self, sprite_list, speed):
         """A method to animate the rat moving"""
@@ -355,7 +366,7 @@ while running:
             running = False
 
     #Fill screen with black (REPLACE THIS WITH BACKGROUND IMAGE SOON)
-    display_surface.fill((0,0,0))
+    display_surface.fill((14,6,8))
 
     #Update and draw sprite groups
     my_door_group.update()
